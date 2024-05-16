@@ -1,97 +1,14 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
-
-What is Kickstart?
-
-  Kickstart.nvim is *not* a distribution.
-
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
-
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
-
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-    If you don't know what this means, type the following:
-      - <escape key>
-      - :
-      - Tutor
-      - <enter key>
-
-    (If you already know the Neovim basics, you can skip this step.)
-
-  Once you've completed that, you can continue working through **AND READING** the rest
-  of the kickstart init.lua.
-
-  Next, run AND READ `:help`.
-    This will open up a help window with some basic information
-    about reading, navigating and searching the builtin help documentation.
-
-    This should be the first place you go to look when you're stuck or confused
-    with something. It's one of my favorite Neovim features.
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-  I have left several `:help X` comments throughout the init.lua
-    These are hints about where to find more information about the relevant settings,
-    plugins or Neovim features used in Kickstart.
-
-   NOTE: Look for lines like this
-
-    Throughout the file. These are for you, the reader, to help you understand what is happening.
-    Feel free to delete them once you know what you're doing, but they should serve as a guide
-    for when you are first encountering a few different constructs in your Neovim config.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now! :)
---]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +19,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -161,10 +78,12 @@ vim.opt.scrolloff = 10
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+vim.api.nvim_set_keymap('n', ':', '<cmd>FineCmdline<CR>', { noremap = true })
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+-- vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -227,6 +146,148 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'MunifTanjim/nui.nvim',
+  { 'VonHeikemen/fine-cmdline.nvim', opts = {} },
+  {
+    'nvim-tree/nvim-tree.lua',
+    config = function()
+      require('nvim-tree').setup()
+    end,
+  },
+  {
+    'xeluxee/competitest.nvim',
+    dependencies = 'MunifTanjim/nui.nvim',
+    config = function()
+      require('competitest').setup {
+        local_config_file_name = '.competitest.lua',
+
+        floating_border = 'rounded',
+        floating_border_highlight = 'FloatBorder',
+        picker_ui = {
+          width = 0.2,
+          height = 0.3,
+          mappings = {
+            focus_next = { 'j', '<down>', '<Tab>' },
+            focus_prev = { 'k', '<up>', '<S-Tab>' },
+            close = { '<esc>', '<C-c>', 'q', 'Q' },
+            submit = { '<cr>' },
+          },
+        },
+        editor_ui = {
+          popup_width = 0.4,
+          popup_height = 0.6,
+          show_nu = true,
+          show_rnu = false,
+          normal_mode_mappings = {
+            switch_window = { '<C-h>', '<C-l>', '<C-i>' },
+            save_and_close = '<C-s>',
+            cancel = { 'q', 'Q' },
+          },
+          insert_mode_mappings = {
+            switch_window = { '<C-h>', '<C-l>', '<C-i>' },
+            save_and_close = '<C-s>',
+            cancel = '<C-q>',
+          },
+        },
+        runner_ui = {
+          interface = 'split',
+          selector_show_nu = false,
+          selector_show_rnu = false,
+          show_nu = true,
+          show_rnu = false,
+          mappings = {
+            run_again = 'R',
+            run_all_again = '<C-r>',
+            kill = 'K',
+            kill_all = '<C-k>',
+            view_input = { 'i', 'I' },
+            view_output = { 'a', 'A' },
+            view_stdout = { 'o', 'O' },
+            view_stderr = { 'e', 'E' },
+            toggle_diff = { 'd', 'D' },
+            close = { 'q', 'Q' },
+          },
+          viewer = {
+            width = 0.5,
+            height = 0.5,
+            show_nu = true,
+            show_rnu = false,
+            close_mappings = { 'q', 'Q' },
+          },
+        },
+        popup_ui = {
+          total_width = 0.8,
+          total_height = 0.8,
+          layout = {
+            { 4, 'tc' },
+            { 5, { { 1, 'so' }, { 1, 'si' } } },
+            { 5, { { 1, 'eo' }, { 1, 'se' } } },
+          },
+        },
+        split_ui = {
+          position = 'right',
+          relative_to_editor = true,
+          total_width = 0.3,
+          vertical_layout = {
+            { 1, 'tc' },
+            { 1, { { 1, 'so' }, { 1, 'eo' } } },
+            { 1, { { 1, 'si' }, { 1, 'se' } } },
+          },
+          total_height = 0.4,
+          horizontal_layout = {
+            { 2, 'tc' },
+            { 3, { { 1, 'so' }, { 1, 'si' } } },
+            { 3, { { 1, 'eo' }, { 1, 'se' } } },
+          },
+        },
+
+        save_current_file = true,
+        save_all_files = false,
+        compile_directory = '.',
+        compile_command = {
+          c = { exec = 'gcc', args = { '-Wall', '$(FNAME)', '-o', '$(FNOEXT)' } },
+          cpp = { exec = 'g++', args = { '-Wall', '$(FNAME)', '-o', '$(FNOEXT)' } },
+          rust = { exec = 'rustc', args = { '$(FNAME)' } },
+          java = { exec = 'javac', args = { '$(FNAME)' } },
+        },
+        running_directory = '.',
+        run_command = {
+          c = { exec = './$(FNOEXT)' },
+          cpp = { exec = './$(FNOEXT)' },
+          rust = { exec = './$(FNOEXT)' },
+          python = { exec = 'python', args = { '$(FNAME)' } },
+          java = { exec = 'java', args = { '$(FNOEXT)' } },
+        },
+        multiple_testing = -1,
+        maximum_time = 5000,
+        output_compare_method = 'squish',
+        view_output_diff = false,
+
+        testcases_directory = '../output/',
+        testcases_use_single_file = true,
+        testcases_auto_detect_storage = true,
+        testcases_single_file_format = '$(FNOEXT).testcases',
+        testcases_input_file_format = '$(FNOEXT)_input$(TCNUM).txt',
+        testcases_output_file_format = '$(FNOEXT)_output$(TCNUM).txt',
+
+        companion_port = 27121,
+        receive_print_message = true,
+        template_file = false,
+        evaluate_template_modifiers = false,
+        date_format = '%c',
+        received_files_extension = 'cpp',
+        received_problems_path = '$(CWD)/$(PROBLEM).$(FEXT)',
+        received_problems_prompt_path = true,
+        received_contests_directory = '$(CWD)',
+        received_contests_problems_path = '$(PROBLEM).$(FEXT)',
+        received_contests_prompt_directory = true,
+        received_contests_prompt_extension = true,
+        open_received_problems = true,
+        open_received_contests = true,
+        replace_received_testcases = false,
+      }
+    end,
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -353,11 +414,11 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          },
+        },
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
@@ -682,12 +743,13 @@ require('lazy').setup({
           -- `friendly-snippets` contains a variety of premade snippets.
           --    See the README about individual language/framework/plugin snippets:
           --    https://github.com/rafamadriz/friendly-snippets
-          -- {
-          --   'rafamadriz/friendly-snippets',
-          --   config = function()
-          --     require('luasnip.loaders.from_vscode').lazy_load()
-          --   end,
-          -- },
+          {
+            'rafamadriz/friendly-snippets',
+            config = function()
+              -- load snippets from path/of/your/nvim/config/my-cool-snippets
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -718,9 +780,9 @@ require('lazy').setup({
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
           -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
+          -- ['<C-n>'] = cmp.mapping.select_next_item(),
           -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
+          -- ['<C-p>'] = cmp.mapping.select_prev_item(),
 
           -- Scroll the documentation window [b]ack / [f]orward
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -729,13 +791,13 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
@@ -781,12 +843,11 @@ require('lazy').setup({
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+      --   -- Load the colorscheme here.
+      --   -- Like many other themes, this one has different styles, and you could load
+      --   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
-
-      -- You can configure highlights by doing something like:
+      --   -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
   },
@@ -885,7 +946,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
