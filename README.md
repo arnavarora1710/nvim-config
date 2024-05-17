@@ -15,3 +15,7 @@ Features included:
     - How it looks:
 
         ![Nvim-Tree](./nvim-tree.png "Nvim Tree")
+
+- FineCmdLine (Custom Command Line)
+    - How it looks:
+        ![FineCmd](./fine_cmd_line.png "FineCmd")
