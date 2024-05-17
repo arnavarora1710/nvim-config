@@ -87,6 +87,8 @@ vim.api.nvim_set_keymap('n', '<C-a>', ':CompetiTest add_testcase<CR>', { noremap
 vim.api.nvim_set_keymap('i', '<C-a>', ':CompetiTest add_testcase<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-e>', ':CompetiTest edit_testcase<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', '<C-e>', ':CompetiTest edit_testcase<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-`>', '<cmd>ToggleTerm direction=float<cr>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<C-`>', '<cmd>ToggleTerm direction=float<cr>', { noremap = true, silent = true })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
@@ -154,6 +156,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  { 'akinsho/toggleterm.nvim', version = '*', config = true },
   {
     'm4xshen/autoclose.nvim',
     config = function()
