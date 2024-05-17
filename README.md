@@ -10,3 +10,8 @@ Features included:
     **Live Grep**: ![Telescope Preview](./telescope_preview_grep.png "Live Grep")
 
     **Buffer Finder**: ![Telescope Preview](./telescope_preview_buf.png "Buffer Finder")
+
+- Nvim-Tree (File Explorer)
+    - How it looks:
+
+        ![Nvim-Tree](./nvim-tree.png "Nvim Tree")
